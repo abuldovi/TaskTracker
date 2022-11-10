@@ -3,6 +3,8 @@ Simple task tracker with a 2-level hierarchy of users.
 Each user can create a project. By doing this user becomes an "Owner" of the project so now it can add new users to the project, edit information 
 about the project, add new tickets, and assigning new users to it. 
 
+Same logic works for tickets but in order to add user to ticket he must be assigned to the project.
+
 Features:
 
 - Login/Registation logic
