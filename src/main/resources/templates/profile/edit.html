@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/layouts :: header">
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" th:replace="fragments/layouts :: topnavbar"></nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion"  th:replace="fragments/layouts :: sidenavbar"></nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4" th:text="${userEntity.getUsername()}"></h1>
+                        <ol class="breadcrumb mb-4">
+
+                            <li class="breadcrumb-item active">Edit</li>
+                        </ol>
+
+                                <form class="col-xl-5" th:method="PATCH" action="" th:object="${userEntity}">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" readonly th:field="*{username}">  </input>
+                                        <label th:for="username">Name</label>
+                                    </div>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}"></div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control"  th:field="*{firstname}"></input>
+                                        <label th:for="firstname">First name</label>
+                                    </div>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" th:field="*{surname}"></input>
+                                        <label th:for="surname">Surname</label>
+                                    </div>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" th:field="*{position}"></input>
+                                        <label th:for="position">Position</label>
+                                    </div>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" th:field="*{email}"></input>
+                                        <label th:for="email">Email</label>
+                                    </div>
+                                    <a class="btn btn-outline-secondary" type="button" th:href="@{changePassword/}">
+                                        Change password
+                                    </a>
+                                    </p>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('passwordRepeat')}" th:errors="*{passwordRepeat}"></div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" th:id="passwordRepeat" th:name="passwordRepeat" type="password" placeholder="Password"  />
+                                        <label th:for="passwordRepeat" type="password">Type password</label>
+                                    </div>
+                                    <div class="mt-4 mb-0">
+                                        <input class="form-control" hidden th:id="password" th:name="password" type="password" th:value="passwordNull1"  />
+                                        <div class="d-grid"><button th:type="SUBMIT" class="col-xl-5 btn btn-success btn-block">Edit</button></div>
+                                    </div>
+                                </form>
+
+                        <button class="col-xl-2 mt-4 mb-4 btn btn-primary" onclick="history.back()">Go Back</button>
+
+                    </div>
+                </main>
+                <footer th:replace="fragments/layouts :: footer"></footer>
+            </div>
+        </div>
+        <div th:insert="fragments/layouts :: scripts"></div>
+
+    </body>
+</html>

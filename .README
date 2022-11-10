@@ -1,0 +1,16 @@
+- Tickets has unique constraint by name and project_id
+    Same ticketDto name can only be for ticketDtos that are in different projects
+
+    Validate projectDto if exist and ticketDto if exist
+
+    Add "Add participant" option
+
+    Check owner/not owner rule
+
+    Delete "delete" and "Make user" for myself in projectDto
+
+    Delete from all the ticketDtos if delete from projectDto
+
+    Add people to ticketDto only who are in projectDto
+
+    Add validity for registration

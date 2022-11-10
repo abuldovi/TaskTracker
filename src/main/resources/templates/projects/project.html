@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/layouts :: header">
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" th:replace="fragments/layouts :: topnavbar"></nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion"  th:replace="fragments/layouts :: sidenavbar"></nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+
+                    <div th:if="${project.isPresent()}" class="container-fluid px-4">
+                        <h1 class="mt-4" th:text="${title}"></h1>
+                            <div class="card border-light mb-3">
+                                <div class="card-header text-black" th:text="${project.get().getName()} + ' project'"></div>
+                                <div class="card-body">
+                                    <h5 class="text-black-50">Status</h5>
+                                    <p th:text="${project.get().getStatus().label}"></p>
+                                    <h5 class="text-black-50">Description</h5>
+                                    <p th:text="${project.get().getDescription()}"></p>
+                                    <h5 class="text-black-50">Created by</h5>
+                                    <p th:text="${project.get().getCreatedby().getUsername()}"></p>
+                                    <h5 class="text-black-50">Created on</h5>
+                                    <p th:text="${#temporals.format(project.get().getCreatedat(), 'dd.MM.yyyy HH:mm')}"></p>
+                                    <h5 class="text-black-50">Last change</h5>
+                                    <p th:if="${project.get().getChangedat()}" th:text="${#temporals.format(project.get().getChangedat(), 'dd.MM.yyyy HH:mm')}"></p>
+                                    <p th:if="${project.get().getChangedat()==null}">Has not been changed yet</p>
+
+
+                                    <div class="accordion" id="accordionExample">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingOne">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                                    List of participants
+                                                </button>
+                                            </h2>
+                                            <div id="collapseOne" class="accordion-collapse collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                                <div class="accordion-body">
+                                                        <ul class="list-group">
+                                                            <li class="list-group-item" style="display: inline-block" th:each="participant : ${project.get().getUserEntities()}" th:object="${participant}">
+                                                                <a style="display: inline-block" class="btn" th:text="${participant.getUsername()}" th:href="@{/users/{username}(username = ${participant.getUsername()})}"></a>
+                                                                <div style="display: inline-block" th:if="${owner}">
+                                                                    <form style="display: inline-block" th:if="${!owners.contains(participant)}" th:method="POST" th:action="@{makeOwner}" th:object="${participant}">
+                                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                                        <input hidden th:name="username" th:id="username" th:value="${participant.getUsername()}">
+                                                                        <button class="btn btn-secondary" th:type="SUBMIT">Make owner</button>
+                                                                    </form>
+                                                                    <form style="display: inline-block" th:if="${owners.contains(participant)}" th:method="POST" th:action="@{deleteOwner}" th:object="${participant}">
+                                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                                        <input hidden th:name="username" th:id="username" th:value="${participant.getUsername()}">
+                                                                        <button th:if="${participant.getUsername() != principalName}" class="btn btn-secondary" th:type="SUBMIT">Make user</button>
+                                                                    </form>
+                                                                    <form th:object="${participant}" style="display: inline-block" th:method="POST" th:action="@{deleteUser}">
+                                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                                        <input hidden th:name="username" th:id="username" th:value="${participant.getUsername()}">
+                                                                        <button th:unless="${project.get().getProjectOwners().size()==1 && participant.getUsername().equals(principalName)}" class="btn btn-danger" th:type="SUBMIT">Delete from project</button>
+                                                                    </form>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div th:if="${owner}" class="accordion-item">
+                                            <h2 class="accordion-header" id="headingTwo">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                    <div class="sb-nav-link-icon"><i class="fa-user-plus"></i></div>
+                                                     Add user
+                                                </button>
+                                            </h2>
+                                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                                <div class="accordion-body">
+                                                    <form th:unless="${users.isEmpty()}" th:action="@{addUser}" th:method="post" th:object="${userEntity}">
+                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                        <select  th:field="*{username}" class="form-select" >
+                                                            <option th:each="user : ${users}" th:value="${user.getUsername()}" th:text="${user.getUsername()}"></option>
+                                                        </select>
+                                                        <button type="submit" class="mt-2 col-xl-2 btn btn-primary">Add user</button>
+                                                    </form>
+                                                    <p class="alert alert-warning" th:if="${users.isEmpty()}"> No additional users registered yet</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div th:if="${owner}" class="card-footer">
+                                    <a class="col-xl-2 btn btn-secondary" th:href="@{edit/}">Edit</a>
+                                    <a class="col-xl-2 btn btn-danger" th:href="@{delete/}">Delete</a>
+                                </div>
+                            </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Tickets
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Created at</th>
+                                            <th>Created by</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Created at</th>
+                                            <th>Created by</th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <tr th:each="ticket : ${tickets}">
+                                            <td><a th:href="@{ticket/{ticketid}/(ticketid = ${ticket.getId()})}" th:text="${ticket.getName()}"></a></td>
+                                            <td th:text="${ticket.getStatus().label}"></td>
+                                            <td th:text="${#temporals.format(ticket.getCreatedat(), 'dd.MM.yyyy HH:mm')}"></td>
+                                            <td><a th:text="${ticket.getCreatedby().getUsername()}" th:href="@{/users/{username}(username = ${ticket.getCreatedby().getUsername()})}" ></a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <a class="col-xl-2 btn btn-success" th:if="${owner}" th:href="@{ticket/create/}">New ticket</a>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                ChangeLog
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple2">
+                                    <thead>
+                                    <tr>
+                                        <th>Created at</th>
+                                        <th>Description</th>
+                                        <th>Made by</th>
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Created at</th>
+                                        <th>Description</th>
+                                        <th>Made by</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    <tr th:each="change : ${changes}">
+                                        <td th:text="${#temporals.format(change.getCreatedat(), 'dd.MM.yyyy HH:mm')}"></td>
+                                        <td th:text="${change.getDescription()}"></td>
+                                        <td><a th:text="${change.getMadeby().getUsername()}" th:href="@{/users/{username}(username = ${change.getMadeby().getUsername()})}" ></a></td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <button class="col-xl-2 btn btn-primary" onclick="history.back()">Go Back</button>
+                        </div>
+                    </div>
+
+                        <div th:if="${project.isEmpty()}" class="container-fluid px-4">
+                            <h1 class="mt-4">No such project</h1>
+                            <p class="alert alert-danger">Project has not been created yet</p>
+                            <button class="col-xl-2 mb-4 btn btn-primary" onclick="history.back()">Go Back</button>
+                        </div>
+                </main>
+                <footer th:replace="fragments/layouts :: footer"></footer>
+            </div>
+        </div>
+        <div th:insert="fragments/layouts :: scripts"></div>
+
+    </body>
+</html>

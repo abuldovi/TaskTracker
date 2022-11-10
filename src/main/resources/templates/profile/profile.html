@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layouts :: header">
+</head>
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" th:replace="fragments/layouts :: topnavbar"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion"  th:replace="fragments/layouts :: sidenavbar"></nav>
+    </div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div th:if="${userEntity.isPresent()}" class="container-fluid px-4">
+                <h1 class="mt-4" th:text="${title}"></h1>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item active">Profile</li>
+                </ol>
+
+                <div class="card border-light mb-3">
+                    <div class="card-header text-black" th:text="${'Profile of ' + userEntity.get().getUsername()}"></div>
+                    <div class="card-body" th:object="${userEntity}">
+                        <h5 class="text-black-50">Username</h5>
+                        <p th:text="${userEntity.get().getUsername()}"></p>
+                        <h5 class="text-black-50">Email</h5>
+                        <p th:text="${userEntity.get().getEmail()}"></p>
+                        <h5 class="text-black-50">Position</h5>
+                        <p th:text="${userEntity.get().getPosition()}"></p>
+                        <h5 class="text-black-50">Registered</h5>
+                        <p th:text="${#temporals.format(userEntity.get().getCreatedat(), 'dd.MM.yyyy HH:mm')}"></p>
+                        <h5 class="text-black-50">Last change</h5>
+                        <p th:if="${userEntity.get().getChangedat()}" th:text="${#temporals.format(userEntity.get().getChangedat(), 'dd.MM.yyyy HH:mm')}"></p>
+                        <p th:if="${userEntity.get().getChangedat()==null}">Has not been changed yet</p>
+                    </div>
+
+            </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Projects table
+                    </div>
+                    <div class="card-body">
+                        <table id="datatablesSimple2">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Created at</th>
+                                <th>Created by</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Created at</th>
+                                <th>Created by</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <tr th:each="project : ${userEntity.get().getProjectList()}">
+                                <td><a th:text="${project.getName()}" th:href="@{${'/projects/' + project.getId()} +'/'}"></a></td>
+                                <td th:text="${project.getStatus().label}"></td>
+                                <td th:text="${#temporals.format(project.getCreatedat(), 'dd.MM.yyyy HH:mm')}"></td>
+                                <td><a th:text="${project.getCreatedby().getUsername()}" th:href="@{/users/{username}(username = ${project.getCreatedby().getUsername()})}" ></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Tickets table
+                    </div>
+                    <div class="card-body">
+                        <table id="datatablesSimple">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Created at</th>
+                                <th>Created by</th>
+                                <th>Project</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Created at</th>
+                                <th>Created by</th>
+                                <th>Project</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <tr th:each="ticket : ${userEntity.get().getTicketList()}">
+                                <td><a th:text="${ticket.getName()}" th:href="@{${'/projects/' + ticket.getProject().getId() + '/ticket/' + ticket.getId()}+'/'}"></a></td>
+                                <td th:text="${ticket.getStatus().label}"></td>
+                                <td th:text="${#temporals.format(ticket.getCreatedat(), 'dd.MM.yyyy HH:mm')}"></td>
+                                <td th:text="${ticket.getCreatedby().getUsername()}"></td>
+                                <td><a th:text="${ticket.getCreatedby().getUsername()}" th:href="@{/users/{username}(username = ${ticket.getCreatedby().getUsername()})}" ></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <button class="col-xl-2 mb-4 btn btn-primary" onclick="history.back()">Go Back</button>
+
+            </div>
+            <div th:if="${userEntity.isEmpty()}" >
+                <p class="alert alert-danger">No such user found</p>
+            </div>
+        </main>
+        <footer th:replace="fragments/layouts :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments/layouts :: scripts"></div>
+</body>
+</html>

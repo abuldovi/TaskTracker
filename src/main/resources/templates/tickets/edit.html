@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/layouts :: header">
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" th:replace="fragments/layouts :: topnavbar"></nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion"  th:replace="fragments/layouts :: sidenavbar"></nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+
+                    <div th:if="${ticket}" class="container-fluid px-4">
+                        <h1 class="mt-4" th:text="${ticket.getName()}"></h1>
+                        <ol class="breadcrumb mb-4">
+
+                            <li class="breadcrumb-item active">Edit</li>
+                        </ol>
+
+                                <form class="col-xl-5" th:method="PATCH" action="" th:object="${ticket}">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" th:field="*{name}" type="text" placeholder="Name"  />
+                                        <label th:for="name">Name</label>
+                                    </div>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('status')}" th:errors="${#fields.errors('status')}"></div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                                <select  th:field="*{status}"  class="form-select" >
+                                                    <option th:selected="${status == ticket.getStatus()}" th:each="status : ${statuses}" th:value="${status}" th:text="${status.label}"></option>
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                                    <div class="form-floating mb-3">
+                                        <textarea class="form-control" style="height: 200px" th:field="*{description}"></textarea>
+                                        <label th:for="description">Description</label>
+                                    </div>
+                                    <div class="mt-4 mb-0">
+                                        <div class="d-grid"><button th:type="SUBMIT" class="col-xl-5 btn btn-success btn-block">Edit</button></div>
+                                    </div>
+                                </form>
+
+                        <button class="col-xl-2 mt-4 mb-4 btn btn-primary" onclick="history.back()">Go Back</button>
+
+                    </div>
+
+                        <div th:if="${ticket==null}" class="container-fluid px-4">
+                            <h1 class="mt-4">No such ticket</h1>
+                            <p class="alert alert-danger">ticket has not been created yet</p>
+                            <button class="col-xl-2 mt-4 mb-4 btn btn-primary" onclick="history.back()">Go Back</button>
+                        </div>
+                </main>
+                <footer th:replace="fragments/layouts :: footer"></footer>
+            </div>
+        </div>
+        <div th:insert="fragments/layouts :: scripts"></div>
+
+    </body>
+</html>

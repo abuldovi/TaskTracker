@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layouts :: header">
+</head>
+<body class="sb-nav-fixed">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" th:replace="fragments/layouts :: topnavbar"></nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion"  th:replace="fragments/layouts :: sidenavbar"></nav>
+    </div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4" th:text="${title}"></h1>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item active">Profile</li>
+                </ol>
+
+                <div class="card border-light mb-3">
+                    <div class="card-header text-black"> Your profile</div>
+                    <div class="card-body" th:object="${userEntity}">
+                        <h5 class="text-black-50">Username</h5>
+                        <p th:text="${userEntity.getUsername()}"></p>
+                        <h5 class="text-black-50">Email</h5>
+                        <p th:text="${userEntity.getEmail()}"></p>
+                        <h5 class="text-black-50">Position</h5>
+                        <p th:text="${userEntity.getPosition()}"></p>
+                        <h5 class="text-black-50">Registered</h5>
+                        <p th:text="${#temporals.format(userEntity.getCreatedat(), 'dd.MM.yyyy HH:mm')}"></p>
+                        <h5 class="text-black-50">Last change</h5>
+                        <p th:if="${userEntity.getChangedat()}" th:text="${#temporals.format(userEntity.getChangedat(), 'dd.MM.yyyy HH:mm')}"></p>
+                        <p th:if="${userEntity.getChangedat()==null}">Has not been changed yet</p>
+                    </div>
+
+                <a class="col-xl-2 mb-4 btn btn-success" href="profile/edit/">Edit</a>
+                <button class="col-xl-2 mb-4 btn btn-primary" onclick="history.back()">Go Back</button>
+            </div>
+            </div>
+
+        </main>
+        <footer th:replace="fragments/layouts :: footer"></footer>
+    </div>
+</div>
+<div th:insert="fragments/layouts :: scripts"></div>
+</body>
+</html>
